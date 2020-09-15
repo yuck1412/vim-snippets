@@ -1,100 +1,68 @@
 priority 50
 
 ## comment
-snippet modify "modify by"
-// modify by yifan.lin @`!v strftime("%Y%m%d %H:%M:%S")`
+snippet mdf "modify by"
+// modify by lin.luo @`!v strftime("%Y%m%d-%H:%M:%S")`
 endsnippet
 
-snippet remove "remove by"
-// remove by yifan.lin @`!v strftime("%Y%m%d %H:%M:%S")`
+snippet rm "remove by"
+// remove by lin.luo @`!v strftime("%Y%m%d-%H:%M:%S")`
 endsnippet
 
 snippet add "add by"
-// add by yifan.lin @`!v strftime("%Y%m%d %H:%M:%S")`
+// add by lin.luo @`!v strftime("%Y%m%d %H:%M:%S")`
 endsnippet
 
 snippet rd "#`RD"
 #`RD
 endsnippet
 
-# snippet "([^\s]\w+).cnt" "cnt" r
-snippet ap "always @(posedge clk or negedge rst) beign ... end" b
-always @(posedge ${1:clk} or negedge ${2:rst_n}) begin
-	if ($2 == 1'b0) begin
-		${3:val} <= #\`RD ${4:1'b0};
-	end
-	else if (${7:$3_clr == 1'b1}) begin
-		$3 <= #\`RD ${5:1'b0};
-	end
-	else if (${8:$3_set== 1'b1}) begin
-		$3 <= #\`RD ${6:1'b1};
-	end
-end
+snippet ife "if else"
+r;.n:$0 ;   .w:1;
+  .c:clk;   .nc:0; .ec:p; .nrd:0;
+  .r:rst_n; .nr:0; .er:n;  .bk:0; 
+ifr
+    .h0
+ee
+    .h1
 endsnippet
 
-snippet cnt "cnt" b
-always @(posedge ${1:clk} or negedge ${2:rst_n}) begin
-	if ($2 == 1'b0) begin
-		${3:val}[${4:7}:0] <= #\`RD `!p snip.rv = int(t[4])+1`'b0;
-	end
-	else if (${5:$3_clr == 1'b1}) begin
-		$3[$4:0] <= #\`RD `!p snip.rv = int(t[4])+1`'b0;
-	end
-	else if (${6:$3_inc == 1'b1}) begin
-		$3[$4:0] <= #\`RD $3[$4:0] + {{`!p snip.rv = int(t[4])`{1'b0}}, 1'b1};
-	end
-end
+snippet iffe "if ef ee"
+r;.n:$0 ;   .w:1;
+  .c:clk;   .nc:0; .ec:p; .nrd:0;
+  .r:rst_n; .nr:0; .er:n;  .bk:0; 
+ifr
+    .h0
+ef
+    .h0
+ee
+    .h1
 endsnippet
 
-snippet ife
-if (${1}) begin
-	${2}
-end
-else begin
-	${3}
-end
+snippet iff "if ef ee"
+r;.n:$0 ;   .w:1;
+  .c:clk;   .nc:0; .ec:p; .nrd:0;
+  .r:rst_n; .nr:0; .er:n;  .bk:0; 
+ifr
+    .h0
+ef
+    .h1
 endsnippet
 
-## regexp
-snippet "([^\s]\w+).cnt" "cnt" r
-always @(posedge ${1:clk} or negedge ${2:rst_n}) begin
-	if ($2 == 1'b0) begin
-		`!p snip.rv = match.group(1)`[${3:7}:0] <= #\`RD `!p snip.rv = int(t[3])+1`'b0;
-	end
-	else if (${4:`!p snip.rv = match.group(1)`_clr == 1'b1}) begin
-		`!p snip.rv = match.group(1)`[$3:0] <= #\`RD `!p snip.rv = int(t[3])+1`'b0;
-	end
-	else if (${5:`!p snip.rv = match.group(1)`_inc == 1'b1}) begin
-		`!p snip.rv = match.group(1)`[$3:0] <= #\`RD `!p snip.rv = match.group(1)`[$3:0] + {{`!p snip.rv = int(t[3])`{1'b0}}, 1'b1};
-	end
-end
+snippet "^dly(\d)" "dly" r
+r;.n:$0 ;   .w:1;
+  .c:clk;   .nc:0; .ec:p; .nrd:0;
+  .r:rst_n; .nr:0; .er:n;  .bk:0; 
+`!p
+s = "ifr\n"
+for i in range(0, int(match.group(1)) ):
+    s += "    .n.._dly%d .= .h0\n" % i
+s += "ee\n"
+for i in range(0, int(match.group(1)) ):
+    l = "    .n.._dly%d .= .n.._dly%d\n" % (i, i-1)
+    l = l.replace("-1", "")
+    s += l
+snip.rv = s
+`
 endsnippet
 
-# snippet ap "always @(posedge clk or negedge rst) beign ... end" b
-snippet "([^\s]\w+).reg" "reg" r
-always @(posedge ${1:clk} or negedge ${2:rst_n}) begin
-	if ($2 == 1'b0) begin
-		`!p snip.rv = match.group(1)` <= #\`RD ${3:1'b0};
-	end
-	else if (${6:`!p snip.rv = match.group(1)`_clr == 1'b1}) begin
-		`!p snip.rv = match.group(1)` <= #\`RD ${4:1'b0};
-	end
-	else if (${7:`!p snip.rv = match.group(1)`_set == 1'b1}) begin
-		`!p snip.rv = match.group(1)` <= #\`RD ${5:1'b1};
-	end
-end
-endsnippet
-
-
-## debug
-snippet "([^\s]\w+).dlog" "dbg" r
-$display("`!p snip.rv = match.group(1)` = %0d", `!p snip.rv = match.group(1)`);$0
-endsnippet
-
-snippet "([^\s]\w+).hlog" "dbg" r
-$display("`!p snip.rv = match.group(1)` = %0h", `!p snip.rv = match.group(1)`);$0
-endsnippet
-
-# snippet "([^\s][0-9a-fA-F]{4}).tohex" "to hex" r
-# (`!p snip.rv = match.group(1)`)$0
-# endsnippet
